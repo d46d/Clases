@@ -14,10 +14,11 @@ class TelegramBot:
     def get_last_message_username(self):
         return json.loads(self.get_updates()['from']['username'])
 
-    def send_message(self, text, buttons=None, one_time_keyboard=True):
+    def send_message(self, text, buttons=None, one_time_keyboard=False):
         url = f'{self.__url}sendMessage?text={text}&chat_id{self.__chat_id}&parse_mode=Markdown'
         if buttons:
-            url = f'{url}&reply_markup={self.__create_buttons(buttons, one_time_keyboard)}'
+            keyboard = [[button] for button in buttons]
+            url = f"{url}&reply_markup=json.dumps({'inline_keyboard': {keyboard}, 'one_time_keyboard': {one_time_keyboard}})"
         return self.__get_content(url)
 
     def get_file_content(self, file_id):
@@ -32,6 +33,6 @@ class TelegramBot:
         response = requests.get(url)
         return response.content.decode('utf8')
 
-    def __create_buttons(self, buttons, one_time_keyboard):
-        keyboard = [[button] for button in buttons]
-        return json.dumps({'inline_keyboard': keyboard, 'one_time_keyboard': one_time_keyboard})
+    #def __create_buttons(self, buttons, one_time_keyboard):
+    #    keyboard = [[button] for button in buttons]
+    #    return json.dumps({'inline_keyboard': keyboard, 'one_time_keyboard': one_time_keyboard})
